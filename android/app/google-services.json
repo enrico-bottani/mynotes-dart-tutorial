@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "250852694764",
+    "project_id": "team-exploding-mynotes",
+    "storage_bucket": "team-exploding-mynotes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250852694764:android:7372be7d041f0151e0e3c9",
+        "android_client_info": {
+          "package_name": "com.example.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "250852694764-vf6o0p91rldseenujbvnfdqb1rjsrecm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVtF5ChbWWdIawMSgAHGdqxFEuXuukceU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "250852694764-vf6o0p91rldseenujbvnfdqb1rjsrecm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
