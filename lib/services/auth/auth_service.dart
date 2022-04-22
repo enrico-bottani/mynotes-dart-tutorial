@@ -16,30 +16,25 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  // TODO: implement currentUser
   AuthUser? get currentUser => provider.currentUser;
 
   @override
   Future<AuthUser> logIn({required String email, required String password}) {
-    // TODO: implement logIn
     return provider.logIn(email: email, password: password);
   }
 
   @override
   Future<void> sendEmailVerification() {
-    // TODO: implement sendEmailVerification
     return provider.sendEmailVerification();
   }
 
   @override
   Future<void> signOut() {
-    // TODO: implement signOut
     return provider.signOut();
   }
 
   @override
   Future<void> initialize() {
-    // TODO: implement initialize
     return provider.initialize();
   }
 }
