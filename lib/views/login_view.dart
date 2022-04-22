@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart' as Routes;
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_provider.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 import 'dart:developer' as devtools;
 import '../firebase_options.dart';
@@ -38,11 +39,12 @@ class _LoginViewState extends State<LoginView> {
     final email = _email.text;
     final password = _password.text;
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      var userCredential = await AuthService
+          .firebase()
+          .logIn(email: email, password: password);
       devtools.log(userCredential.toString());
-      final user = FirebaseAuth.instance.currentUser;
-      if (user?.emailVerified ?? false) {
+      final user = AuthService.firebase().currentUser;
+      if (user?.isEmailVerified ?? false) {
         Navigator.of(context).pushNamedAndRemoveUntil(
           Routes.notesRoute,
           (route) => false,
@@ -54,32 +56,16 @@ class _LoginViewState extends State<LoginView> {
               (route) => false,
         );
       }
-    } on FirebaseAuthException catch (e) {
-      // specialized catch black
-      switch (e.code) {
-        case 'user-not-found':
-          devtools.log("User not found");
-          await showErrorDialog(context, "User not found");
-          break;
-        case 'invalid-email':
-          devtools.log("Invalid email");
-          await showErrorDialog(context, "Invalid email");
-          break;
-        case 'wrong-password':
-          devtools.log("Wrong password");
-          await showErrorDialog(context, "Wrong credentials");
-          break;
-        default:
-          devtools.log("Something else happend");
-          await showErrorDialog(context, "Unknown error");
-          devtools.log(e.code);
-          break;
-      }
-    } catch (e) {
-      devtools.log("Something else happend");
-      await showErrorDialog(context, "Error: ${e.toString()}");
-      devtools.log(e.toString());
+    }on UserNotFoundAuthException catch(e){
+      await showErrorDialog(context, "User not found");
+    } on WrongPasswordAuthException catch(e){
+      await showErrorDialog(context, "Wrong password");
+    } on InvalidEMailAuthException catch(e){
+      await showErrorDialog(context, "Invalid email");
+    } catch(e){
+      await showErrorDialog(context, "Generic Error");
     }
+
   }
 
   @override
@@ -102,7 +88,9 @@ class _LoginViewState extends State<LoginView> {
             autocorrect: false,
             decoration: InputDecoration(hintText: "Enter your password here"),
           ),
-          TextButton(onPressed: onLoginButtonPress, child: Text("Login")),
+        SizedBox(height: 10,)
+        ,
+          ElevatedButton(onPressed: onLoginButtonPress, child: Text("Login")),
           TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(

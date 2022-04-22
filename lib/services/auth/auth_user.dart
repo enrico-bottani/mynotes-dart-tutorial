@@ -10,5 +10,7 @@ class AuthUser{
   factory AuthUser.fromFirebase(f.User user){
     return AuthUser(user.emailVerified);
   }
+
+
 }
 
