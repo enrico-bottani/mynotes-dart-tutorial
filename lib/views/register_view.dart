@@ -38,33 +38,35 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register"),),
+      appBar: AppBar(
+        title: const Text("Register"),
+      ),
       body: Column(
         children: [
           TextField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration:
-            InputDecoration(hintText: "Enter your email here"),
+            decoration: InputDecoration(hintText: "Enter your email here"),
           ),
           TextField(
             controller: _password,
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
-            decoration:
-            InputDecoration(hintText: "Enter your password here"),
+            decoration: InputDecoration(hintText: "Enter your password here"),
           ),
           TextButton(
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  UserCredential userCredential = await FirebaseAuth
-                      .instance
+                  UserCredential userCredential = await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
-                      email: email, password: password);
+                          email: email, password: password);
                   devtools.log(userCredential.toString());
+                  final user = FirebaseAuth.instance.currentUser;
+                  await user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
                 } on FirebaseAuthException catch (e) {
                   switch (e.code) {
                     case 'weak-password':
@@ -79,8 +81,13 @@ class _RegisterViewState extends State<RegisterView> {
                       await showErrorDialog(context, "Invalid email entered");
                       devtools.log("Invalid email entered");
                       break;
+                    default:
+                      await showErrorDialog(context, "Exception");
+                      devtools.log("Error ${e.code}");
+                      break;
                   }
-                  devtools.log(e.code);
+                } catch (e) {
+                  devtools.log("Error");
                 }
               },
               child: Text("Register")),
@@ -88,7 +95,7 @@ class _RegisterViewState extends State<RegisterView> {
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   loginRoute,
-                      (route) => false,
+                  (route) => false,
                 );
               },
               child: Text("Already registered? Login here!")),

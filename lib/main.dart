@@ -19,7 +19,8 @@ void main() {
     routes: {
       loginRoute: (context) => LoginView(),
       registerRoute: (context) => RegisterView(),
-      notesRoute: (context) => NotesView()
+      notesRoute: (context) => NotesView(),
+      verifyEmailRoute:(context)=>VerifyEmailView()
     },
   ));
 }
