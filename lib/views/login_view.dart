@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/constants/routes.dart' as Routes;
 import 'package:mynotes/utils/show_error_dialog.dart';
 import 'dart:developer' as devtools;
 import '../firebase_options.dart';
@@ -41,10 +41,19 @@ class _LoginViewState extends State<LoginView> {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       devtools.log(userCredential.toString());
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        notesRoute,
-        (route) => false,
-      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user?.emailVerified ?? false) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          Routes.notesRoute,
+          (route) => false,
+        );
+      }
+      else{
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          Routes.verifyEmailRoute,
+              (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       // specialized catch black
       switch (e.code) {
@@ -66,7 +75,7 @@ class _LoginViewState extends State<LoginView> {
           devtools.log(e.code);
           break;
       }
-    }catch(e){
+    } catch (e) {
       devtools.log("Something else happend");
       await showErrorDialog(context, "Error: ${e.toString()}");
       devtools.log(e.toString());
@@ -97,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  registerRoute,
+                  Routes.registerRoute,
                   (route) => false,
                 );
               },
@@ -107,5 +116,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-
