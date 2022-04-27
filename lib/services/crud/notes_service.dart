@@ -15,15 +15,21 @@ class NotesService {
   List<DatabaseNote> _notes = [];
 
   static final NotesService _shared = NotesService._sharedInstance();
+
   // private constructor
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      // Alla sottoscrizione di un nuovo listener
+      _notesStreamController.sink.add(_notes);
+    });
+  }
 
-  factory NotesService()=>_shared;
+  factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
-  Stream<List<DatabaseNote>> get allNotes{
+  Stream<List<DatabaseNote>> get allNotes {
     return _notesStreamController.stream;
   }
 
@@ -34,7 +40,7 @@ class NotesService {
       return createUser(email);
     } catch (e) {
       rethrow;
-     }
+    }
   }
 
   Future<void> _cacheNotes() async {
@@ -43,12 +49,10 @@ class NotesService {
     _notesStreamController.add(_notes);
   }
 
-
-  Future<void> _ensureDBIsOpen() async{
-    try{
+  Future<void> _ensureDBIsOpen() async {
+    try {
       await open();
-    } on DatabaseAlreadyOpenException{
-    }
+    } on DatabaseAlreadyOpenException {}
   }
 
   Future<void> open() async {
